@@ -59,7 +59,7 @@ class CustomerController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(int $id)
     {
         $customer = Customer::findOrFail($id);
         return view('customer.show', compact('customer'));
@@ -68,7 +68,7 @@ class CustomerController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(int $id)
     {
         $customer = Customer::findOrFail($id);
         return view('customer.edit', compact('customer'));
@@ -77,7 +77,7 @@ class CustomerController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(CustomerStoreRequest $request, string $id)
+    public function update(CustomerStoreRequest $request, int $id)
     {
         $customer = Customer::findOrFail($id);
 
@@ -103,12 +103,47 @@ class CustomerController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(int $id)
     {
         $customer = Customer::findOrfail($id);
-        File::delete(public_path($customer->image));
         $customer->delete();
 
         return redirect()->route('customers.index');
+    }
+
+    function trashIndex(Request $request)
+    {
+        $customers = Customer::when($request->has('search'), function ($query) use ($request) {
+            $query->where('first_name', 'LIKE', "%$request->search%")
+                ->orWhere('last_name', 'LIKE', "%$request->search%")
+                ->orWhere('email', 'LIKE', "%$request->search%")
+                ->orWhere('phone', 'LIKE', "%$request->search%");
+        })->orderBy('id', $request->has('order') && $request->order == 'asc' ? 'ASC' : 'DESC')
+            ->onlyTrashed()
+            ->get();
+        return view('customer.trash', compact('customers'));
+    }
+
+    /**
+     * Restores the specified resource from storage.
+     */
+    function restore(int $id)
+    {
+        $customer = Customer::withTrashed()->findOrFail($id);
+        $customer->restore();
+
+        return redirect()->back();
+    }
+
+    /**
+     * Restores the specified resource from storage.
+     */
+    function forceDestroy(int $id)
+    {
+        $customer = Customer::withTrashed()->findOrFail($id);
+        File::delete(public_path($customer->image));
+        $customer->forceDelete();
+
+        return redirect()->back();
     }
 }
