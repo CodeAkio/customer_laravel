@@ -7,26 +7,27 @@
         <div class="card">
             <div class="card-header">
                 <div class="row">
-                <div class="col-md-2">
-                    <a href="{{ route('customers.create') }}" class="btn" style="background-color: #4643d3; color: white;"><i class="fas fa-plus"></i> Create Customer</a>
-                </div>
-                <div class="col-md-8">
-                    <form action="{{ route('customers.index') }}" method="GET">
-                        <div class="input-group mb-3">
-                            <input type="text" class="form-control" placeholder="Search anything..." aria-describedby="button-addon2" name="search" value="{{ request()->search }}">
-                            <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Search</button>
-                        </div>
-                    </form>
-                </div>
-                <div class="col-md-2">
-
-                    <div class="input-group mb-3">
-                        <select class="form-select" name="" id="">
-                            <option value="">Newest to Old</option>
-                            <option value="">Old to Newest</option>
-                        </select>
+                    <div class="col-md-2">
+                        <a href="{{ route('customers.create') }}" class="btn" style="background-color: #4643d3; color: white;"><i class="fas fa-plus"></i> Create Customer</a>
                     </div>
-                </div>
+                    <div class="col-md-8">
+                        <form action="{{ route('customers.index') }}" method="GET">
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" placeholder="Search anything..." aria-describedby="button-addon2" name="search" value="{{ request()->search }}">
+                                <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Search</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-2">
+                        <form action="{{ route('customers.index') }}" method="GET" id="form-order">
+                            <div class="input-group mb-3">
+                                <select class="form-select" name="order" id="" onchange="$('#form-order').submit()">
+                                    <option @selected(request()->order == 'desc') value="desc">Newest to Oldest</option>
+                                    <option @selected(request()->order == 'asc') value="asc">Old to Newest</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
                 </div>
 
             </div>
